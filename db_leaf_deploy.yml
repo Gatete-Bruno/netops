@@ -81,7 +81,7 @@
                 - id: up
             type: swp
 
-    - name: Set bridge
+    - name: Set bridge for VLAN
       nvidia.nvue.interface: null
       bridge:
         state: merged
