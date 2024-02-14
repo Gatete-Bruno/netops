@@ -1,0 +1,52 @@
+---
+vni20:
+  name: vni20
+  type: "l2"
+  bridge:
+    access: 20
+  vxlan_id: 20
+vni30:
+  name: vni30
+  type: "l2"
+  bridge:
+    access: 30
+  vxlan_id: 30
+vni40:
+  name: vni40
+  type: "l2"
+  bridge:
+    access: 40
+  vxlan_id: 40  
+vni70:
+  name: vni70
+  type: "l2"
+  bridge:
+    access: 70
+  vxlan_id: 70 
+vniADMIN:
+  name: vniADMIN
+  type: "l3"
+  bridge:
+    access: 3020
+  vxlan_id: 3020
+vniDMZ:
+  name: vniDMZ
+  type: "l3"
+  bridge:
+    access: 3030
+  vxlan_id: 3030
+vniDB:
+  name: vniDB
+  type: "l3"
+  bridge:
+    access: 3040
+  vxlan_id: 3040  
+vniAPP:
+  name: vniAPP
+  type: "l3"
+  bridge:
+    access: 3070
+  vxlan_id: 3070   
+
+
+

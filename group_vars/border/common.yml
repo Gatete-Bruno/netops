@@ -1,0 +1,122 @@
+---
+loopback:
+  ips:
+    - "{{ vxlan_local_loopback }}"
+  vxlan_local_tunnel_ip: "{{ vxlan_local_loopback | ipaddr('address') }}"
+  clag_vxlan_anycast_ip: "{{ vxlan_anycast_loopback | ipaddr('address') }}"
+eth0:
+  ips:
+    - "{{ eth0_ip }}"
+interfaces:
+  - {name: swp1, options: "{{ leaf_spine_interface }}"}
+  - {name: swp2, options: "{{ leaf_spine_interface }}"}
+  - {name: swp3, options: "{{ leaf_spine_interface }}"}
+  - {name: swp4, options: "{{ leaf_spine_interface }}"}
+  - {name: swp5, options: "{{ FW_interface }}"}
+  - {name: swp6, options: "{{ FW_interface }}"}
+  - {name: swp7, options: "{{ LB_interface }}"}
+  - {name: swp8, options: "{{ LB_interface }}"}
+  - {name: swp9, options: "{{ DMZ_interface }}"}
+  - {name: swp10, options: "{{ ADMIN_interface }}"}
+
+bonds:
+  - name: "bond1"
+    ports: ["swp9"]
+    bridge:
+      vids: [30]
+    options:
+      mtu: 9000
+  - name: "bond2"
+    ports: ["swp10"]
+    bridge:
+      vids: [20]
+    options:
+      mtu: 9000
+vnis:
+  - "{{ vniDMZ }}"
+  - "{{ vniDB }}"
+  - "{{ vniAPP }}"
+  - "{{ vniADMIN }}"
+bridge:
+  ports:
+    - "bond1"
+    - "bond2"
+    - "{{ vniAPP.name }}"
+    - "{{ vniADMIN.name }}"
+    - "{{ vniDMZ.name }}"
+    - "{{ vniDB.name }}"
+  vids:
+    - 20
+    - 30
+vlans:
+  - "{{ vlan20 }}"
+  - "{{ vlan30 }}"
+vrfs:
+  - "{{ vrf_mgmt }}"
+  - "{{ vrf_APP_border }}"
+  - "{{ vrf_ADMIN }}"
+  - "{{ vrf_DB_border }}"
+  - "{{ vrf_DMZ }}"
+  - "{{ vrf_Firewall}}"
+  - "{{vrf_LoadBalancer}}"
+bgp:
+  asn: "{{ bgp_asn_prefix }}{{ id }}"
+  router_id: "{{ vxlan_local_loopback | ipaddr('address') }}"
+  peergroups:
+    - {name: underlay, remote_as: external}
+  neighbors:
+    - {interface: swp1, unnumbered: true, peergroup: underlay}
+    - {interface: swp2, unnumbered: true, peergroup: underlay}
+    - {interface: swp3, unnumbered: true, peergroup: underlay}
+    - {interface: swp4, unnumbered: true, peergroup: underlay}
+    - {interface: swp5, unnumbered: true, peergroup: services}
+    - {interface: swp6, unnumbered: true, peergroup: services}
+    - {interface: swp7, unnumbered: true, peergroup: services}
+    - {interface: swp8, unnumbered: true, peergroup: services}
+    - {interface: swp9, unnumbered: true, peergroup: servers}
+    - {interface: swp10, unnumbered: true, peergroup: servers}
+  address_family:
+    - name: ipv4_unicast
+      redistribute:
+        - {type: connected}
+    - name: l2vpn_evpn
+      neighbors:
+        - {interface: underlay, activate: true}
+      advertise_all_vni: true
+  vrfs:
+    - name: ADMIN
+      router_id: "{{ vxlan_local_loopback | ipaddr('address') }}"
+      address_family:
+        - name: ipv4_unicast
+          redistribute:
+            - {type: static}
+        - name: l2vpn_evpn
+          extras:
+            - "advertise ipv4 unicast"
+    - name: APP_BORDER
+      router_id: "{{ vxlan_local_loopback | ipaddr('address') }}"
+      address_family:
+        - name: ipv4_unicast
+          redistribute:
+            - {type: static}
+        - name: l2vpn_evpn
+          extras:
+            - "advertise ipv4 unicast"
+    - name: DB_BORDER
+      router_id: "{{ vxlan_local_loopback | ipaddr('address') }}"
+      address_family:
+        - name: ipv4_unicast
+          redistribute:
+            - {type: static}
+        - name: l2vpn_evpn
+          extras:
+            - "advertise ipv4 unicast"    
+    - name: DMZ
+      router_id: "{{ vxlan_local_loopback | ipaddr('address') }}"
+      address_family:
+        - name: ipv4_unicast
+          redistribute:
+            - {type: static}
+        - name: l2vpn_evpn
+          extras:
+            - "advertise ipv4 unicast"                    

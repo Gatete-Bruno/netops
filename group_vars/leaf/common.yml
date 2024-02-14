@@ -1,0 +1,67 @@
+---
+loopback:
+  ips:
+    - "{{ vxlan_local_loopback }}"
+  vxlan_local_tunnel_ip: "{{ vxlan_local_loopback | ipaddr('address') }}"
+  clag_vxlan_anycast_ip: "{{ vxlan_anycast_loopback | ipaddr('address') }}"
+eth0:
+  ips:
+    - "{{ eth0_ip }}"
+interfaces:
+  - name: swp1
+    options: "{{ leaf_spine_interface }}"
+  - name: swp2
+    options: "{{ leaf_spine_interface }}"
+bonds:
+  - name: bond1
+    ports: [swp3-16]
+    bridge:
+      access: 40
+    options:
+      mtu: 9000
+      extras:
+        - bond-lacp-bypass-allow yes
+        - mstpctl-bpduguard yes
+        - mstpctl-portadminedge yes
+vnis:
+  - "{{ vni40 }}"
+  - "{{ vniDB }}"
+bridge:
+  ports:
+    - "{{ vni40.name }}"
+    - "bond1"
+    - "bond2"
+    - "bond3"
+  vids:
+    - 40
+vlans: 
+  - "{{ vlan40 }}"
+vrfs:
+  - "{{ vrf_DB }}"
+bgp:
+  asn: "{{ bgp_asn_prefix }}0{{ id }}"
+  router_id: "{{ vxlan_local_loopback | ipaddr('address') }}"
+  peergroups:
+    - {name: underlay, remote_as: external}
+  neighbors:
+    - {interface: swp1, unnumbered: true, peergroup: underlay}
+    - {interface: swp2, unnumbered: true, peergroup: underlay}
+  address_family:
+    - name: ipv4_unicast
+      redistribute:
+        - {type: connected}
+    - name: l2vpn_evpn
+      neighbors:
+        - {interface: underlay, activate: true}
+      advertise_all_vni: true
+  vrfs:
+    - name: DB
+      router_id: "{{ vxlan_local_loopback | ipaddr('address') }}"
+      address_family:
+        - name: ipv4_unicast
+          redistribute:
+            - {type: connected}
+        - name: l2vpn_evpn
+          extras:
+            - "advertise ipv4 unicast"
+

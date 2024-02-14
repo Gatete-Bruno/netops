@@ -1,0 +1,30 @@
+---
+devices:
+  server02:
+    bond:
+      vlan: 20
+      ip: 172.29.2.102/24
+      route:
+        dest: 172.29.0.0/21
+        nexthop: 172.29.2.1
+  server03:
+    bond:
+      vlan: 30
+      ip: 172.29.3.103/24
+      route:
+        dest: 172.29.0.0/21
+        nexthop: 172.29.3.1
+  server04:
+    bond:
+      vlan: 40
+      ip: 172.29.4.104/24
+      route:
+        dest: 172.29.0.0/21
+        nexthop: 172.29.4.1
+  server07:
+    bond:
+      vlan: 70
+      ip: 172.29.7.106/24
+      route:
+        dest: 172.29.0.1
+        nexthop: 172.29.7.1      

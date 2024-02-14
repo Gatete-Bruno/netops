@@ -1,0 +1,10 @@
+hostname: borderleaf01
+eth0_ip: 172.29.10.41
+loopback_ip: 172.29.9.41
+vxlan_local_loopback: 172.29.9.41
+autonomous_system: 65101
+router_id: 172.29.9.41
+mac_id_suffix: 01
+vlan_ip_suffix: 42
+vrr_address_suffix: 41
+l3_vni_id: 3040

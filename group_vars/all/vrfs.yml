@@ -1,0 +1,38 @@
+---
+vrf_mgmt:
+  name: mgmt
+  routes:
+    - 0.0.0.0/0 172.29.10.1
+  extras:
+    - "address 127.0.0.1/8"
+    - "address ::1/128"
+vrf_Admin:
+  name: ADMIN
+  vxlan_id: 3020
+vrf_AdminBorder:
+  name: ADMIN_BORDER
+  vxlan_id: 3020  
+vrf_APP:
+  name: APP
+  vxlan_id: 3060
+vrf_APP_BORDER:
+  name: APP_BORDER
+  vxlan_id: 3060  
+vrf_DMZ:
+  name: DMZ
+  vxlan_id: 3030
+vrf_DMZ_BORDER:
+  name: DMZ_BORDER
+  vxlan_id: 3030  
+vrf_DB:
+  name: DB
+  vxlan_id: 3040  
+vrf_DB_BORDER:
+  name: DB_BORDER
+  vxlan_id: 3040    
+vrf_Firewall:
+  name: FW
+vrf_LoadBalancer:
+  name: LB
+
+
