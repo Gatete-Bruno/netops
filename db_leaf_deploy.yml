@@ -44,55 +44,59 @@
               #
               #####################################################################################
 
-    - name: Set interface
-      nvidia.nvue.interface:
-        state: merged
-        revid: '{{ revision.revid }}'
-        data:
-          - id: eth0
-            ip:
-              address:
-                - id: "{{ eth0_ip }}"
-              vrf: mgmt
-            type: eth
-          - id: lo
-            ip:
-              address:
-                - id: "{{ loopback_ip }}/32"
-            type: loopback
-          - id: swp1
-            link:
-              state:
-                - id: up
-            type: swp
-          - id: swp2
-            link:
-              state:
-                - id: up
-            type: swp
-          - id: swp3
-            link:
-              state:
-                - id: up
-            type: swp
-          - id: swp4
-            link:
-              state:
-                - id: up
-            type: swp
+    - name: Set interface and bridge
+      block:
+        - name: Set interface
+          nvidia.nvue.interface:
+            state: merged
+            revid: '{{ revision.revid }}'
+            data:
+              - id: eth0
+                ip:
+                  address:
+                    - id: "{{ eth0_ip }}"
+                  vrf: mgmt
+                type: eth
+              - id: lo
+                ip:
+                  address:
+                    - id: "{{ loopback_ip }}/32"
+                type: loopback
+              - id: swp1
+                link:
+                  state:
+                    - id: up
+                type: swp
+              - id: swp2
+                link:
+                  state:
+                    - id: up
+                type: swp
+              - id: swp3
+                link:
+                  state:
+                    - id: up
+                type: swp
+              - id: swp4
+                link:
+                  state:
+                    - id: up
+                type: swp
 
-    - name: Set bridge
-      nvidia.nvue.interface: null
-      bridge:
-        state: merged
-        revid: '{{ revision.revid }}'
-        data:
-          - id: br_default
-            type: vlan-aware
-            vlan:
-              - id: '40'
-                vni:
+        - name: Set bridge
+          nvidia.nvue.interface: null
+          bridge:
+            state: merged
+            revid: '{{ revision.revid }}'
+            data:
+              - id: br_default
+                type: vlan-aware
+                vlan:
                   - id: '40'
+                    vni:
+                      - id: '40'
+
+      delegate_to: localhost
 
     - name: Set evpn
       nvidia.nvue.evpn:
@@ -185,83 +189,4 @@
             router:
               static:
                 - id: 0.0.0.0/0
-                  address_family: ipv4-unicast
-                  via:
-                    - id: 172.29.10.1
-                      type: ipv4-address
-
-    - name: Set VLAN interfaces
-      nvidia.nvue.interface:
-        state: merged
-        revid: '{{ revision.revid }}'
-        data:
-          - id: vlan40
-            ip:
-              address:
-                - id: 172.29.40.{{ vlan_ip_suffix }}/24
-              vrr:
-                address:
-                  - id: 172.29.40.{{ vrr_address_suffix }}/24
-                state:
-                  - id: up
-                mac_address: '00:00:00:00:00:{{ mac_id_suffix }}'
-              vrf: DB
-            vlan: 40
-            type: svi
-          - id: bond1
-            bond:
-              lacp_bypass: 'on'
-              mlag:
-                enable: 'on'
-                id: 1
-              member:
-                - id: swp1
-            bridge:
-              domain:
-                - id: br_default
-                  access: 40
-                  stp:
-                    admin_edge: 'on'
-                    auto_edge: 'on'
-                    bpdu_guard: 'on'
-            type: bond
-            link:
-              mtu: 9000
-          - id: bond2
-            bond:
-              lacp_bypass: 'on'
-              mlag:
-                enable: 'on'
-                id: 2
-              member:
-                - id: swp2
-            bridge:
-              domain:
-                - id: br_default
-                  access: 40
-                  stp:
-                    admin_edge: 'on'
-                    auto_edge: 'on'
-                    bpdu_guard: 'on'
-            type: bond
-            link:
-              mtu: 9000
-          - id: bond3
-            bond:
-              lacp_bypass: 'on'
-              mlag:
-                enable: 'on'
-                id: 3
-              member:
-                - id: swp3
-            bridge:
-              domain:
-                - id: br_default
-                  access: 40
-                  stp:
-                    admin_edge: 'on'
-                    auto_edge: 'on'
-                    bpdu_guard: 'on'
-            type: bond
-            link:
-              mtu: 9000
+                  address_family
