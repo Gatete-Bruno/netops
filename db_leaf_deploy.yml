@@ -247,4 +247,21 @@
             link:
               mtu: 9000
           - id: bond3
-            ```
+            bond:
+              lacp_bypass: 'on'
+              mlag:
+                enable: 'on'
+                id: 3
+              member:
+                - id: swp3
+            bridge:
+              domain:
+                - id: br_default
+                  access: 40
+                  stp:
+                    admin_edge: 'on'
+                    auto_edge: 'on'
+                    bpdu_guard: 'on'
+            type: bond
+            link:
+              mtu: 9000
