@@ -12,9 +12,11 @@
       nvidia.nvue.config:
         state: new
       register: revision
+
     - name: dump revision
       debug:
         msg: '{{ revision.revid }}'
+
     - name: Set system settings
       nvidia.nvue.system:
         state: merged
@@ -50,6 +52,7 @@
               #
 
               #####################################################################################
+
     - name: Set interface
       nvidia.nvue.interface:
         state: merged
@@ -86,6 +89,7 @@
               state:
                 - id: up
             type: swp
+
     - name: Set bridge
       nvidia.nvue.interface: null
       bridge:
@@ -126,13 +130,12 @@
             router_id: "{{ router_id }}"
           vrr:
             enable: 'on'
-    
+
     - name: Set vrf
       nvidia.nvue.vrf:
         state: merged
         revid: '{{ revision.revid }}'
         data:
-         
           - id: DB
             evpn:
               enable: 'on'
@@ -195,12 +198,12 @@
                   via:
                     - id: 172.29.10.1
                       type: ipv4-address
+
     - name: Set VLAN interfaces
       nvidia.nvue.interface:
         state: merged
         revid: '{{ revision.revid }}'
         data:
-          
           - id: vlan40
             ip:
               address:
@@ -253,38 +256,4 @@
             link:
               mtu: 9000
           - id: bond3
-            bond:
-              lacp_bypass: 'on'
-              mlag:
-                enable: 'on'
-                id: 3
-              member:
-                - id: swp3
-            bridge:
-              domain:
-                - id: br_default
-                  access: 40
-                  stp:
-                    admin_edge: 'on'
-                    auto_edge: 'on'
-                    bpdu_guard: 'on'
-            type: bond
-            link:
-              mtu: 9000
-    - name: Apply new revision
-      nvidia.nvue.config:
-        state: apply
-        revid: '{{ revision.revid }}'
-        force: true
-        wait: 10
-      register: revision
-    - name: dump previous output
-      debug:
-        msg: '{{ revision }}'
-    - name: Get the current config
-      nvidia.nvue.api:
-        operation: get
-      register: output
-    - name: Print current config
-      ansible.builtin.debug:
-        msg: '{{ output }}'
+           
