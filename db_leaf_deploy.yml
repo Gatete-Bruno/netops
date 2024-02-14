@@ -20,14 +20,14 @@
         state: merged
         revid: '{{ revision.revid }}'
         data:
-          hostname: {{hostname}}
+          hostname: "{{ hostname }}"
           timezone: Etc/UTC
           message:
             post_login: >
               #####################################################################################
 
               #                     You are successfully logged in to:
-              {{hostname}}                     #
+              {{ hostname }}                     #
 
               #####################################################################################
             pre_login: >
@@ -58,13 +58,13 @@
           - id: eth0
             ip:
               address:
-                - id: {{eth0_ip}}
+                - id: "{{ eth0_ip }}"
               vrf: mgmt
             type: eth
           - id: lo
             ip:
               address:
-                - id: '{{loopback_ip}}/32'
+                - id: "{{ loopback_ip }}/32"
             type: loopback
           - id: swp1
             link:
@@ -113,7 +113,7 @@
         data:
           enable: 'on'
           source:
-            address: {{vxlan_local_loopback}}
+            address: "{{ vxlan_local_loopback }}"
 
     - name: Set router
       nvidia.nvue.router:
@@ -122,8 +122,8 @@
         data:
           bgp:
             enable: 'on'
-            autonomous_system: {{autonomous_system}}
-            router_id: {{router_id}}
+            autonomous_system: "{{ autonomous_system }}"
+            router_id: "{{ router_id }}"
           vrr:
             enable: 'on'
     
@@ -151,9 +151,9 @@
                         enable: 'on'
                   l2vpn_evpn:
                     enable: 'on'
-                autonomous_system: {{autonomous_system}}
+                autonomous_system: "{{ autonomous_system }}"
                 enable: 'on'
-                router_id: {{router_id:}}
+                router_id: "{{ router_id }}"
           - id: default
             router:
               bgp:
@@ -165,9 +165,9 @@
                         enable: 'on'
                   l2vpn_evpn:
                     enable: 'on'
-                autonomous_system: {{autonomous_system}}
+                autonomous_system: "{{ autonomous_system }}"
                 enable: 'on'
-                router_id: {{router_id}}
+                router_id: "{{ router_id }}"
                 neighbor:
                   - id: swp1
                     peer_group: underlay
@@ -204,13 +204,13 @@
           - id: vlan40
             ip:
               address:
-                - id: 172.29.40.{{vlan_ip_suffix}}/24
+                - id: 172.29.40.{{ vlan_ip_suffix }}/24
               vrr:
                 address:
-                  - id: 172.29.40.{{vrr_address_suffix}}/24
+                  - id: 172.29.40.{{ vrr_address_suffix }}/24
                 state:
                   - id: up
-                mac_address: '00:00:00:00:00:{{mac_id_suffix}}'
+                mac_address: '00:00:00:00:00:{{ mac_id_suffix }}'
               vrf: DB
             vlan: 40
             type: svi
